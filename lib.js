@@ -7,5 +7,6 @@ import utils from './utils/index.js'
 import vault from './vault/index.js'
 import validate from './validate/index.js'
 import config from './config/index.js'
+import mw from './middlewares//index.js'
 
-export { cache, db, storage, queue, mailer, utils, vault, validate, config }
+export { cache, db, storage, queue, mailer, utils, vault, validate, config, mw }

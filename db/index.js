@@ -5,6 +5,6 @@ async function init() {
   _dbClient = {}
 }
 
-if (_dbClient) init()
+if (!_dbClient) init()
 
 export default _dbClient
