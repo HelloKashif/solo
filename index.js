@@ -7,11 +7,15 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import cache from './cache'
 
 const __filename = fileURLToPath(import.meta.url) // get the resolved path to the file
 const __dirname = path.dirname(__filename) // get the name of the directory
 
-const solo = {}
+const solo = {
+  cache,
+}
+
 const server = express()
 
 async function loadConfig() {
@@ -41,10 +45,31 @@ const template = `
 </html>
 `
 
-function makePageRoute(module) {
+function makePageRouteWithAutoBuild(globPath) {
   return async (req, res) => {
     try {
-      const { default: Comp, getServerSideProps } = module
+      //Compile pages
+
+      console.log('Fetching ', globPath)
+      const result = await esbuild.build({
+        entryPoints: [globPath],
+        // jsx: 'automatic',
+        bundle: true,
+        format: 'esm',
+        outfile: `.solo/${globPath}`,
+        // external: ['react'],
+        loader: {
+          '.js': 'jsx',
+        },
+        // overwrite: true,
+      })
+      console.log(result)
+
+      const modPath = path.resolve(process.cwd(), '.solo', globPath)
+      console.log(modPath)
+      const m = await import(pathToFileURL(modPath))
+
+      const { default: Comp, getServerSideProps } = m
       let props = {}
       if (getServerSideProps) {
         props = await getServerSideProps(req)
@@ -130,27 +155,8 @@ async function loadApiRoutes() {
   })
 }
 async function loadPageRoutes() {
-  //Compile pages
-
-  const result = await esbuild.build({
-    entryPoints: glob.sync('pages/**/*.js', { posix: true }),
-    jsx: 'automatic',
-    bundle: true,
-    format: 'esm',
-    outdir: '.solo/pages',
-    assetNames: 'assets/[dir]',
-    // external: ['react'],
-    loader: {
-      '.js': 'jsx',
-    },
-    // overwrite: true,
-  })
-
   glob.sync('pages/**/*.js', { posix: true }).forEach(async i => {
-    const modPath = path.resolve(process.cwd(), '.solo', i)
-    console.log(`Importing module: ${modPath}`)
-    const m = await import(pathToFileURL(modPath))
-
+    console.log('here', i)
     let endpoint = i
       .replace('pages/', '')
       .replace('index.js', '')
@@ -160,22 +166,23 @@ async function loadPageRoutes() {
     endpoint = `/${endpoint}` //TODO mac vs windows bug here , mac needs /api
     console.log(`Registering page route: ${endpoint}`)
 
-    server.get(endpoint, makePageRoute(m))
+    server.get(endpoint, makePageRouteWithAutoBuild(i))
   })
 }
 
 async function init() {
+  // server.use((req, _, next) => {
+  //   console.log(`Request: ${req.url}`)
+  //   next()
+  // })
+
+  //Setup config
   await loadConfig()
 
-  server.use((req, _, next) => {
-    console.log(`Request: ${req.url}`)
-    next()
-  })
+  //Setup database
 
   await loadApiRoutes()
   await loadPageRoutes()
-
-  server.use(express.static(path.resolve(process.cwd(), '.solo/dist/client')))
 
   const port = solo.config.server.port
   server.listen(port, err => {
@@ -188,5 +195,6 @@ async function init() {
   })
 }
 
-init()
+await init()
+
 export default solo
