@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "lib.js",
+  "main": "index.js",
   "scripts": {
     "build": "yarn build:server",
     "build:server": "esbuild index.js --bundle --outfile=dist/server.js --format=esm --platform=node --loader:.js=jsx --packages=external",
     "watch:server": "esbuild index.js --bundle --outfile=dist/server.js --format=esm --platform=node --loader:.js=jsx --packages=external --watch"
-  },
-  "bin": {
-    "start": "./bin/start.js"
   },
   "keywords": [],
   "author": "",

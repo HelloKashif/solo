@@ -1,4 +1,4 @@
-const axios = require('axios')
+import axios from 'axios'
 
 const baseURL = '/api'
 const axiosInstance = axios.create({ baseURL })
