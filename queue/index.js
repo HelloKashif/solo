@@ -1,7 +1,7 @@
 let _queueClient
 
 async function init() {
-  console.log(`Initting queue`)
+  // console.log(`Initting queue`)
   _queueClient = {
     pop(topic, id, opts) {
       console.log(`Queue: pull ${topic} -> ${id}`)

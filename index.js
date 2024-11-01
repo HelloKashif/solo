@@ -195,6 +195,6 @@ async function init() {
   })
 }
 
-await init()
+// await init()
 
 export default solo

@@ -1,7 +1,7 @@
 let _dbClient
 
 async function init() {
-  console.log(`Initting db`)
+  // console.log(`Initting db`)
   _dbClient = {}
 }
 

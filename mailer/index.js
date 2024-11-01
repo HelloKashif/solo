@@ -1,7 +1,7 @@
 let _mailerClient
 
 async function init() {
-  console.log(`Initting mailer`)
+  // console.log(`Initting mailer`)
   _mailerClient = {
     send(stuff) {
       console.log(`Mailer: sending email`)

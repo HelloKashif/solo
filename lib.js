@@ -7,6 +7,11 @@ import utils from './utils/index.js'
 import vault from './vault/index.js'
 import validate from './validate/index.js'
 import config from './config/index.js'
-import mw from './middlewares//index.js'
+import mw from './middlewares/index.js'
+import { init as envInit } from './env/index.js'
+import { init as loggerInit } from './logger/index.js'
+
+envInit()
+loggerInit()
 
 export { cache, db, storage, queue, mailer, utils, vault, validate, config, mw }

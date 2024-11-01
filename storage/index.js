@@ -1,7 +1,7 @@
 let _storageClient
 
 async function init() {
-  console.log(`Initting storage`)
+  // console.log(`Initting storage`)
   _storageClient = {
     put(topic, id) {
       console.log(`Storage: pull ${topic} -> ${id}`)
