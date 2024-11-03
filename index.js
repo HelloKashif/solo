@@ -9,6 +9,8 @@ import mailer from './mailer/index.js'
 import vault from './vault/index.js'
 import validate from './validate/index.js'
 import mw from './middlewares/index.js'
+import * as apiAdapter from './api-adapters//index.js'
+import server from './server/index.js'
 import { init as loggerInit } from './logger/index.js'
 
 function init() {
@@ -26,5 +28,7 @@ export {
   validate,
   config,
   mw,
+  apiAdapter,
   init,
+  server,
 }

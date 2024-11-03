@@ -1,17 +1,64 @@
+import * as uuid from 'uuid'
+import shortId from 'short-uuid'
+import crypto from 'crypto'
+
 export const isDev = process.env.NODE_ENV === 'development'
 export const isProd = process.env.NODE_ENV === 'production'
 
-export function sleep() {}
-export function randomUUID() {}
-export function randomId(length = 10) {}
-export function randomCode(length, type = 'alphanumeric') {}
+export function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms))
+}
+
+export function randomUUID(removeHyphens = true) {
+  let result = uuid.v4()
+  if (removeHyphens) result = result.replace(/-/g, '')
+  return result
+}
+export function randomId(len = 10) {
+  const id = shortId.generate()
+  return id.slice(0, len)
+}
+
+export function randomCode(len = 5, type = 'alphanumeric') {
+  const chars = {
+    numeric: '01234567890',
+  }
+  const characters = chars[type]
+  if (!characters) {
+    throw `Unsupported type in randomCode ${type}`
+  }
+
+  let code = ''
+  for (let i = 0; i < len; i++) {
+    code += characters.charAt(crypto.randomInt(0, characters.length))
+  }
+  return code
+}
+
 export function randomInt(min = 0, max = 999) {
   return Math.floor(min + Math.random() * (max - min + 1))
 }
-export function randomFromArray(array) {}
+export function randomFromArray(array) {
+  return array[randomInt(0, array.length)]
+}
+
 export function noop() {}
-export function redact(text, redactPercent) {}
-export function parseDuration(str) {}
+export function redact(text, redactPercent) {
+  throw 'Unimplemented'
+}
+export function parseDuration(str) {
+  throw 'Unimplemented'
+}
+
+// Truncates a string and puts ... if needed
+export function truncateStr(source, size = 30) {
+  try {
+    return source.length > size ? source.slice(0, size - 1) + '...' : source
+  } catch (err) {
+    console.warn('Err truncating:', source, err)
+    return source
+  }
+}
 
 export default {
   isDev,
@@ -23,79 +70,5 @@ export default {
   randomFromArray,
   noop,
   parseDuration,
-}
-
-const isDev = process.env.APP_ENV === 'development'
-const isProd = process.env.APP_ENV === 'production'
-const isPreview = process.env.APP_ENV === 'preview'
-const isTest = process.env.APP_ENV === 'test'
-exports.isDev = isDev
-exports.isProd = isProd
-exports.isPreview = isPreview
-exports.isTest = isTest
-
-exports.sleep = ms => new Promise(r => setTimeout(r, ms))
-
-let healthStatus = true
-exports.setHealth = value => (healthStatus = value)
-exports.getHealth = () => healthStatus
-
-exports.hmsToSeconds = str => {
-  if (!str) return null
-  try {
-    let p = str.split(':')
-    let s = 0
-    let m = 1
-
-    while (p.length > 0) {
-      s += m * parseInt(p.pop(), 10)
-      m *= 60
-    }
-
-    return s
-  } catch (er) {
-    //This maybe an int
-    return parseInt(str)
-  }
-}
-
-//This is for returning from our api middlewares/handlers
-exports.err = (msg = '', statusCode = 400) => {
-  return {
-    statusCode,
-    error: msg,
-  }
-}
-
-// Appends http protocol to a url string
-exports.appendHttpProtocol = (url, secure = true) => {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url
-  } else {
-    const proto = secure ? 'https://' : 'http://'
-    return `${proto}${url}`
-  }
-}
-
-// Truncates a string and puts ... if needed
-exports.truncateStr = (source, size = 30) => {
-  try {
-    return source.length > size ? source.slice(0, size - 1) + '...' : source
-  } catch (err) {
-    console.warn('Err truncating:', source, err)
-    return source
-  }
-}
-exports.noop = () => {}
-
-exports.isUrl = str => {
-  if (!str) return false
-
-  let parsed = str.trim()
-  return parsed.startsWith('http://') || parsed.startsWith('https://')
-}
-
-exports.formatNumber = n => {
-  const formatCount = Intl.NumberFormat('us-EN').format
-  return formatCount(n)
+  truncateStr,
 }

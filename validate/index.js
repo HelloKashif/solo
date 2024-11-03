@@ -1,4 +1,4 @@
-function isEmail(input) {
+export function isEmail(input) {
   if (!input) return false
 
   //ridiculously long emails are considered invalid
@@ -9,11 +9,24 @@ function isEmail(input) {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     )
 }
-function isURL() {}
-function isNumber() {}
-function isText() {}
-function isArray() {}
-function isJSON() {}
+export function isURL(input) {
+  if (!input) return false
+
+  let parsed = input.trim()
+  return parsed.startsWith('http://') || parsed.startsWith('https://')
+}
+export function isNumber() {
+  throw 'Unimplemented'
+}
+export function isText() {
+  throw 'Unimplemented'
+}
+export function isArray() {
+  throw 'Unimplemented'
+}
+export function isJSON() {
+  throw 'Unimplemented'
+}
 
 export default {
   isEmail,
