@@ -32,7 +32,7 @@ if (!db) {
 
   if (dbCfg.autoMigrate) {
     const currVer = await db.migrate.currentVersion()
-    console.log(`Running migrations... (latest version = ${currVer})`)
+    console.log(`[DB] Running migrations.... (latest version = ${currVer})`)
     await db.migrate.latest()
   }
 }

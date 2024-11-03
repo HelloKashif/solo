@@ -1,6 +1,7 @@
 import * as uuid from 'uuid'
 import shortId from 'short-uuid'
 import crypto from 'crypto'
+import parseDur from 'parse-duration'
 
 export const isDev = process.env.NODE_ENV === 'development'
 export const isProd = process.env.NODE_ENV === 'production'
@@ -46,9 +47,6 @@ export function noop() {}
 export function redact(text, redactPercent) {
   throw 'Unimplemented'
 }
-export function parseDuration(str) {
-  throw 'Unimplemented'
-}
 
 // Truncates a string and puts ... if needed
 export function truncateStr(source, size = 30) {
@@ -58,6 +56,11 @@ export function truncateStr(source, size = 30) {
     console.warn('Err truncating:', source, err)
     return source
   }
+}
+
+//eg: parseDuration('7m') => 7minutes in ms
+export function parseDuration(str, format = 'ms') {
+  return parseDur(str, format)
 }
 
 export default {
