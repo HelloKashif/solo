@@ -14,7 +14,7 @@ const DEFAULT_OPTS = {
   disable: false,
   shouldRetryOnError: false,
 }
-export default function useApi(path, query = {}, opts = DEFAULT_OPTS) {
+function useApi(path, query = {}, opts = DEFAULT_OPTS) {
   let url = `${path}`
   if (Object.keys(query).length) {
     url += `?${qs.stringify(query, { arrayFormat: 'comma' })}`
@@ -36,3 +36,5 @@ export default function useApi(path, query = {}, opts = DEFAULT_OPTS) {
     errorData: error?.errorData,
   }
 }
+
+export default useApi

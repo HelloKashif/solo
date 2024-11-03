@@ -20,7 +20,7 @@ export function randomId(len = 10) {
   return id.slice(0, len)
 }
 
-export function randomCode(len = 5, type = 'alphanumeric') {
+export function randomCode(len = 5, type = 'numeric') {
   const chars = {
     numeric: '01234567890',
   }
@@ -63,6 +63,15 @@ export function parseDuration(str, format = 'ms') {
   return parseDur(str, format)
 }
 
+export function apiErr(msg, code = 400) {
+  return {
+    statusCode: code,
+    error: {
+      message: msg,
+    },
+  }
+}
+
 export default {
   isDev,
   isProd,
@@ -74,4 +83,5 @@ export default {
   noop,
   parseDuration,
   truncateStr,
+  apiErr,
 }
