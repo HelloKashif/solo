@@ -1,7 +1,9 @@
 import cfg from '../config/index.js'
+import utils from '../utils/index.js'
 import * as glob from 'glob'
 import { pathToFileURL } from 'node:url'
 import express from 'express'
+import chokidar from 'chokidar'
 
 const port = cfg.server.port
 
@@ -30,25 +32,36 @@ function makeExpressRoute(module, method, middlewares = []) {
     }
   }
 }
+
+let apiRouter
+
+server.use('/api', function (req, res, next) {
+  apiRouter(req, res, next)
+})
+
 async function loadApiRoutes() {
+  const newRouter = new express.Router()
+
   const apiRoutes = glob.sync('api/**/*.js', { posix: true })
   apiRoutes.forEach(async i => {
     const mod = await import(pathToFileURL(i))
 
     let endpoint = i
+      .replace('api', '') //Remove initial api if any
       .replace('index.js', '')
       .replace('.js', '')
       .replaceAll('[', ':')
       .replaceAll(']', '')
       .replace(/\/$/, '') //Remove last trailing slash
-    endpoint = `/${endpoint}` //TODO mac vs windows bug here , mac needs /api
+
+    console.log(`Endpoint ${endpoint}`)
     const methods = ['get', 'post', 'put', 'delete']
     methods.forEach(m => {
       if (mod[m]) {
         console.log(
           `[Server] Discovered API Route ${m.toUpperCase()} ${endpoint}`,
         )
-        server[m](
+        newRouter[m](
           endpoint,
           makeExpressRoute(
             mod[m],
@@ -59,9 +72,17 @@ async function loadApiRoutes() {
       }
     })
   })
+
+  apiRouter = newRouter
 }
 
 loadApiRoutes()
+if (utils.isDev) {
+  chokidar.watch('./api', { cwd: process.cwd() }).on('change', () => {
+    console.log(`[HMR] Reloading API ...`)
+    loadApiRoutes()
+  })
+}
 
 server.start = function () {
   server.listen(port, err => {
