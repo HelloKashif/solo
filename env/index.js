@@ -2,10 +2,12 @@ import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
 
-const DEFAULT_FILES = ['.env']
-const DEFAULT_DIR = process.cwd()
+const files = ['.env']
+const searchDir = process.cwd()
 
-export const init = (searchDir = DEFAULT_DIR, files = DEFAULT_FILES) => {
+let _initted = false
+
+if (!_initted) {
   for (const f of files) {
     const file = path.resolve(searchDir, f)
     if (!fs.existsSync(file)) continue
@@ -14,11 +16,7 @@ export const init = (searchDir = DEFAULT_DIR, files = DEFAULT_FILES) => {
     const { error } = dotenv.config({ path: file })
     if (error) throw error
   }
-}
-
-let _initted = false
-
-if (!_initted) {
-  init()
   _initted = true
 }
+
+export default process.env
