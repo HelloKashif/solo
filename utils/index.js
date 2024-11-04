@@ -18,8 +18,9 @@ function randomUUID(removeHyphens = true) {
   if (removeHyphens) result = result.replace(/-/g, '')
   return result
 }
-function randomId(len = 10) {
+function randomId(len = 0) {
   const id = shortId.generate()
+  if (!len) return id
   return id.slice(0, len)
 }
 
@@ -78,27 +79,27 @@ function apiErr(msg, code = 400) {
 
 function encodeJwt(payload, expiresIn = null, opts = {}) {
   if (expiresIn) opts.expiresIn = expiresIn
-  return jwt.sign(payload, process.env.JWT_SIGN_SECRET, opts)
+  return jwt.sign(payload, process.env.VAULT_JWT_SECRET, opts)
 }
 
 //Decodes a jwt payload OR returns null if not valid
 function decodeJwt(payload) {
   let data
   try {
-    data = jwt.verify(token, process.env.JWT_SIGN_SECRET)
+    data = jwt.verify(token, process.env.VAULT_JWT_SECRET)
   } catch (_) {}
   return data
 }
 
 //Encrypts given string
 function encrypt(text) {
-  const cryptr = new Cryptr(process.env.ENCRYPTION_SECRET)
+  const cryptr = new Cryptr(process.env.VAULT_ENCRYPTION_SECRET)
   return cryptr.encrypt(text)
 }
 
 //Decrypts given encrypted string
 function decrypt(encryptedText) {
-  const cryptr = new Cryptr(process.env.ENCRYPTION_SECRET)
+  const cryptr = new Cryptr(process.env.VAULT_ENCRYPTION_SECRET)
   return cryptr.decrypt(encryptedText)
 }
 

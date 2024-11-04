@@ -16,6 +16,13 @@ const knexConfig = {
   seeds: {
     directory: path.resolve(process.cwd(), dbCfg.seedsDir || 'seeds'),
   },
+  pool: {
+    afterCreate: (conn, cb) => {
+      conn.pragma('foreign_keys = ON')
+      conn.pragma('journal_mode=wal')
+      cb(null, conn)
+    },
+  },
 }
 
 let db
