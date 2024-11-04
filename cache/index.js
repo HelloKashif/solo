@@ -58,6 +58,6 @@ const _cacheClient = {
   },
 }
 
-ensureInitted()
+await ensureInitted()
 
 export default _cacheClient

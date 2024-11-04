@@ -1,7 +1,7 @@
 import path from 'path'
 import knex from 'knex'
 import soloConfig from '../config/index.js'
-import { isDev } from '../utils/index.js'
+import utils from '../utils/index.js'
 const dbCfg = soloConfig.db
 
 const knexConfig = {
@@ -22,7 +22,7 @@ let db
 
 if (!db) {
   //Prevent hot reload to exhaust db connections
-  if (isDev) {
+  if (utils.isDev) {
     const _cached = global['knex-db-conn'] || knex(knexConfig)
     db = _cached
     global['knex-db-conn'] = _cached

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function useRecaptcha(disable = false) {
+export default function useRecaptcha() {
   const ref = React.createRef()
 
   const onCaptchaChange = code => {
@@ -9,7 +9,7 @@ export default function useRecaptcha(disable = false) {
   }
 
   const getCaptcha = () => {
-    if (disable) {
+    if (!ref.current) {
       return Promise.resolve('dummy')
     }
     return ref.current.executeAsync()

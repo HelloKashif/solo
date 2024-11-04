@@ -2,25 +2,28 @@ import * as uuid from 'uuid'
 import shortId from 'short-uuid'
 import crypto from 'crypto'
 import parseDur from 'parse-duration'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import Cryptr from 'cryptr'
 
-export const isDev = process.env.NODE_ENV === 'development'
-export const isProd = process.env.NODE_ENV === 'production'
+const isDev = process.env.NODE_ENV === 'development'
+const isProd = process.env.NODE_ENV === 'production'
 
-export function sleep(ms) {
+function sleep(ms) {
   return new Promise(r => setTimeout(r, ms))
 }
 
-export function randomUUID(removeHyphens = true) {
+function randomUUID(removeHyphens = true) {
   let result = uuid.v4()
   if (removeHyphens) result = result.replace(/-/g, '')
   return result
 }
-export function randomId(len = 10) {
+function randomId(len = 10) {
   const id = shortId.generate()
   return id.slice(0, len)
 }
 
-export function randomCode(len = 5, type = 'alphanumeric') {
+function randomCode(len = 5, type = 'numeric') {
   const chars = {
     numeric: '01234567890',
   }
@@ -36,20 +39,21 @@ export function randomCode(len = 5, type = 'alphanumeric') {
   return code
 }
 
-export function randomInt(min = 0, max = 999) {
+function randomInt(min = 0, max = 999) {
   return Math.floor(min + Math.random() * (max - min + 1))
 }
-export function randomFromArray(array) {
+function randomFromArray(array) {
   return array[randomInt(0, array.length)]
 }
 
-export function noop() {}
-export function redact(text, redactPercent) {
+function noop() {}
+
+function redact(text, redactPercent) {
   throw 'Unimplemented'
 }
 
 // Truncates a string and puts ... if needed
-export function truncateStr(source, size = 30) {
+function truncateStr(source, size = 30) {
   try {
     return source.length > size ? source.slice(0, size - 1) + '...' : source
   } catch (err) {
@@ -59,19 +63,73 @@ export function truncateStr(source, size = 30) {
 }
 
 //eg: parseDuration('7m') => 7minutes in ms
-export function parseDuration(str, format = 'ms') {
+function parseDuration(str, format = 'ms') {
   return parseDur(str, format)
+}
+
+function apiErr(msg, code = 400) {
+  return {
+    statusCode: code,
+    error: {
+      message: msg,
+    },
+  }
+}
+
+function encodeJwt(payload, expiresIn = null, opts = {}) {
+  if (expiresIn) opts.expiresIn = expiresIn
+  return jwt.sign(payload, process.env.JWT_SIGN_SECRET, opts)
+}
+
+//Decodes a jwt payload OR returns null if not valid
+function decodeJwt(payload) {
+  let data
+  try {
+    data = jwt.verify(token, process.env.JWT_SIGN_SECRET)
+  } catch (_) {}
+  return data
+}
+
+//Encrypts given string
+function encrypt(text) {
+  const cryptr = new Cryptr(process.env.ENCRYPTION_SECRET)
+  return cryptr.encrypt(text)
+}
+
+//Decrypts given encrypted string
+function decrypt(encryptedText) {
+  const cryptr = new Cryptr(process.env.ENCRYPTION_SECRET)
+  return cryptr.decrypt(encryptedText)
+}
+
+function generateHash(input, salt) {
+  return bcrypt.hashSync(input, salt)
+}
+function compareHash(input1, input2) {
+  return bcrypt.compareSync(input1, input2)
 }
 
 export default {
   isDev,
   isProd,
   sleep,
+
+  //Random
   randomUUID,
   randomId,
   randomCode,
   randomFromArray,
+
   noop,
   parseDuration,
   truncateStr,
+  apiErr,
+
+  //Vault
+  encodeJwt,
+  decodeJwt,
+  encrypt,
+  decrypt,
+  generateHash,
+  compareHash,
 }
