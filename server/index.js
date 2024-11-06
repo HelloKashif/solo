@@ -17,7 +17,7 @@ function makeExpressHandler(module, middlewares = []) {
   return async (req, res) => {
     const callbacks = []
     try {
-      req.query = req.params
+      req.query = { ...req.query, ...req.params }
       const callStack = [...middlewares, module]
 
       for (const func of callStack) {
