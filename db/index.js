@@ -29,7 +29,7 @@ let db
 
 if (!db) {
   //Prevent hot reload to exhaust db connections
-  if (utils.isDev) {
+  if (soloConfig.isDev) {
     const _cached = global['knex-db-conn'] || knex(knexConfig)
     db = _cached
     global['knex-db-conn'] = _cached

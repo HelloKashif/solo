@@ -14,7 +14,7 @@ if (!_mailerClient) {
   })
 
   registerTemplates()
-  if (utils.isDev) {
+  if (config.isDev) {
     chokidar.watch('emails/').on('all', (event, path) => {
       console.log('[Mailer] hot reloading email templates...')
       registerTemplates()

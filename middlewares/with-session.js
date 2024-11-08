@@ -32,7 +32,7 @@ function getPropertyDescriptorForReqSession(session) {
 
 export default async function withSession(req, res) {
   //allow access via 192.168... address as well
-  if (utils.isDev) {
+  if (cfg.isDev) {
     sessionOptions.domain = req.hostname.split(':')[0]
     sessionOptions.secure = false
     sessionOptions.cookieOptions = {

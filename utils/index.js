@@ -1,3 +1,4 @@
+import config from '../config/index.js'
 import * as uuid from 'uuid'
 import shortId from 'short-uuid'
 import crypto from 'crypto'
@@ -5,9 +6,6 @@ import parseDur from 'parse-duration'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import Cryptr from 'cryptr'
-
-const isDev = process.env.NODE_ENV === 'development'
-const isProd = process.env.NODE_ENV === 'production'
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms))
@@ -79,14 +77,14 @@ function apiErr(msg, code = 400) {
 
 function encodeJwt(payload, expiresIn = null, opts = {}) {
   if (expiresIn) opts.expiresIn = expiresIn
-  return jwt.sign(payload, process.env.VAULT_JWT_SECRET, opts)
+  return jwt.sign(payload, config.vault.jwtSecret, opts)
 }
 
 //Decodes a jwt payload OR returns null if not valid
 function decodeJwt(payload) {
   let data
   try {
-    data = jwt.verify(payload, process.env.VAULT_JWT_SECRET)
+    data = jwt.verify(payload, config.vault.jwtSecret)
   } catch (err) {
     if (isDev) console.log(err)
   }
@@ -95,13 +93,13 @@ function decodeJwt(payload) {
 
 //Encrypts given string
 function encrypt(text) {
-  const cryptr = new Cryptr(process.env.VAULT_ENCRYPTION_SECRET)
+  const cryptr = new Cryptr(config.vault.encryptionSecret)
   return cryptr.encrypt(text)
 }
 
 //Decrypts given encrypted string
 function decrypt(encryptedText) {
-  const cryptr = new Cryptr(process.env.VAULT_ENCRYPTION_SECRET)
+  const cryptr = new Cryptr(config.vault.encryptionSecret)
   return cryptr.decrypt(encryptedText)
 }
 
@@ -111,10 +109,15 @@ function generateHash(input, salt) {
 function compareHash(input1, input2) {
   return bcrypt.compareSync(input1, input2)
 }
+function getExtensionFromUrl(url) {
+  if (!url) {
+    throw new Error('Invalid url:', url)
+  }
+  // return url.split('.').pop()
+  return url.split(/[#?]/)[0].split('.').pop().trim()
+}
 
 export default {
-  isDev,
-  isProd,
   sleep,
 
   //Random
@@ -135,4 +138,6 @@ export default {
   decrypt,
   generateHash,
   compareHash,
+
+  getExtensionFromUrl,
 }

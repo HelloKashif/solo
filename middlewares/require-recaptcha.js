@@ -16,7 +16,6 @@ const verifyRecaptcha = async captcha => {
 }
 
 export default async function requireRecaptcha(req) {
-  if (utils.isDev) return
   if (cfg.recaptcha.disabled) return
 
   const { recaptchaToken } = req.body

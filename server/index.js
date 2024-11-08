@@ -47,9 +47,9 @@ async function loadApiRoutes(importPrefix = '') {
       if (mod[m]) {
         let expressMethodName = m
         if (m === 'del') expressMethodName = 'delete'
-        console.log(
-          `[Server] Discovered API Route ${m.toUpperCase()} ${endpoint}`,
-        )
+        // console.log(
+        //   `[Server] Discovered API Route ${m.toUpperCase()} ${endpoint}`,
+        // )
         newRouter[expressMethodName](
           endpoint,
           makeExpressHandler(
@@ -64,7 +64,7 @@ async function loadApiRoutes(importPrefix = '') {
   apiRouter = newRouter
 }
 
-if (utils.isDev) {
+if (cfg.isDev) {
   const reloadApiRoutes = {
     name: 'reloadApiRoutes',
     setup(build) {
