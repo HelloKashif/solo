@@ -1,4 +1,5 @@
 import cache from '../cache/index.js'
+import soloCfg from '../config/index.js'
 import { formatDistanceToNowStrict } from 'date-fns'
 
 /*
@@ -88,7 +89,7 @@ export default function requireRatelimit(config = {}) {
   const { max, duration } = parseLimitString(opts.interval)
 
   return async req => {
-    if (process.env.DISABLE_RATELIMIT === 'true') return
+    if (soloCfg.ratelimiter.disabled) return
 
     if (opts.shouldDisable(req, opts)) return
 

@@ -9,6 +9,7 @@ import mailer from './mailer/index.js'
 import validate from './validate/index.js'
 import mw from './middlewares/index.js'
 import server from './server/index.js'
+import * as serverUtils from './server/utils.js'
 import { init as loggerInit } from './logger/index.js'
 
 export {
@@ -22,4 +23,5 @@ export {
   config,
   mw,
   server,
+  serverUtils,
 }
