@@ -86,8 +86,10 @@ function encodeJwt(payload, expiresIn = null, opts = {}) {
 function decodeJwt(payload) {
   let data
   try {
-    data = jwt.verify(token, process.env.VAULT_JWT_SECRET)
-  } catch (_) {}
+    data = jwt.verify(payload, process.env.VAULT_JWT_SECRET)
+  } catch (err) {
+    if (isDev) console.log(err)
+  }
   return data
 }
 
