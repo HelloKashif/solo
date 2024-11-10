@@ -133,24 +133,27 @@ _s3.generateUploadUrl = async function (
   size,
   expires = 240,
 ) {
-  if (!key || !contentType || !size) {
+  if (!path || !contentType || !size) {
     throw new Error(
       'Missing data while generating presigned url:',
-      key,
+      path,
       contentType,
       size,
     )
   }
 
-  const { url, fields } = await createPresignedPost(_s3.client, {
+  const params = {
     Bucket: cfg.bucketName,
+    Key: path,
     Fields: {
-      key,
+      'key': path,
       'Content-Type': contentType,
     },
     Expires: expires, // seconds
     Conditions: [['content-length-range', 0, size]],
-  })
+  }
+  const { url, fields } = await createPresignedPost(_s3.client, params)
+  return { url, fields }
 }
 
 export default _s3

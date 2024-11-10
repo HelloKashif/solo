@@ -47,6 +47,7 @@ export function makeExpressHandler(module, middlewares = []) {
       }
     } catch (err) {
       console.log(err)
+      res.setHeader('Content-Type', 'application/json')
       res.status(500).send(err.message)
     } finally {
       //run cleanup callbacks (in reverse)
